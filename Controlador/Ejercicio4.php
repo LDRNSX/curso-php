@@ -35,7 +35,7 @@ $resultado = mysqli_query($conexion, $consulta) or die("Algo ha ido mal en la co
 
 //Tabla inicial-----------------------------------------------------------------------------------------------------------------------------------------------
 if (!$_POST && !$_GET){
-echo '<br/><a href="ejercicio4.php?accion=C&IdPersona=0" class="agregar">Agregar nuevo<a/></br></br>' . PHP_EOL;
+echo '<br/><a href="ejercicio4.php?accion=C&IdPersona=0" class="agregar">Agregar nuevo<a/></br></br>' . PHP_EOL; 
 echo '<table style="width:100%">' . PHP_EOL;
 echo "<tr>
         <th>ID Persona</th>
