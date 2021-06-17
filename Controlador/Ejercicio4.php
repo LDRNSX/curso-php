@@ -13,6 +13,7 @@ $usuario = 'root';
 $contraseña = '';
 $baseDatos = 'archivos';
 
+
 //Paginacion----------------------------------------------------------------------------------------------------------------------------------------------
 $per_page_record = 10;  // Number of entries to show in a page.   
 // Look for a GET variable page if not found default is 1.        
@@ -34,7 +35,8 @@ $conexion = mysqli_connect($servidor, $usuario, $contraseña, $baseDatos) or die
 $resultado = mysqli_query($conexion, $consulta) or die("Algo ha ido mal en la consulta a la base de datos");
 
 //Tabla inicial-----------------------------------------------------------------------------------------------------------------------------------------------
-if (!$_POST && !$_GET){
+
+    if ((!$_POST && !$_GET ) || $page_no){
 echo '<br/><a href="ejercicio4.php?accion=C&IdPersona=0" class="agregar">Agregar nuevo<a/></br></br>' . PHP_EOL; 
 echo '<table style="width:100%">' . PHP_EOL;
 echo "<tr>
@@ -86,13 +88,12 @@ if ($page_no > 1) {
     $pagLink = "";
 
     if ($page_no >= 2) {
-        echo "<a href='Ejercicio4.php?page=" . ($page_no - 1) . "'>  Prev </a>";
+        echo "<a href='Ejercicio4.php?page_no=" . ($page_no - 1) . "'>  Prev </a>";
     }
 
     for ($i = 1; $i <= $total_pages; $i++) {
         if ($i == $page_no) {
-            $pagLink .= "<a class = 'active' href='Ejercicio4.php?page="
-                . $i . "'>" . $i . " </a>";
+            $pagLink .= "<a class = 'active'  disabled>" . $i . " </a>";
         } else {
             $pagLink .= "<a href='Ejercicio4.php?page_no=" . $i . "'>   
                                           " . $i . " </a>";
@@ -101,7 +102,7 @@ if ($page_no > 1) {
     echo $pagLink;
 
     if ($page_no < $total_pages) {
-        echo "<a href='Ejercicio4.php?page=" . ($page_no + 1) . "'>  Next </a>";
+        echo "<a href='Ejercicio4.php?page_no=" . ($page_no + 1) . "'>  Next </a>";
     }
 
     ?>
@@ -115,7 +116,7 @@ if ($page_no > 1) {
 echo'</pre>';
 die();*/
 if($_GET && !$_POST){
-$accion= $_GET['accion'];
+$accion = $_GET['accion'];
 $IdPersona = $_GET['IdPersona'];
 
 switch ($accion) {
@@ -130,7 +131,6 @@ switch ($accion) {
         break;
 }
 
-
 $servidor = 'localhost';
 $usuario = 'root';
 $contraseña = '';
@@ -139,11 +139,12 @@ $conexion = mysqli_connect($servidor, $usuario, $contraseña, $baseDatos) or die
 $consulta = "SELECT * FROM personas WHERE IdPersona = '".$IdPersona."';";
 $resultado = mysqli_query($conexion, $consulta) or die("Algo ha ido mal en la consulta a la base de datos");
 $fila = mysqli_fetch_array($resultado);
-
+if($accion!="C"){
 $NIFNIE = $fila["NIFNIE"];
 $nombre = $fila["Nombre"];
 $apellidos = $fila["Apellidos"];
 $user = $fila["Usuario"];
+}
 ?>
 <!--Formulario de captura-------------------------------------------------------------------------------------------------------------------------->
 
@@ -151,16 +152,16 @@ $user = $fila["Usuario"];
 	<h3>Registro a <?php echo $texto; ?></h3>
     <form action="" method="post" enctype="multipart/form-data">
         Nombre: <br/>
-        <input type="text" name="nombre" value="<?php echo "$nombre"?>" <?php if($accion=="D"){echo "readonly";}else{echo "required";}?>/><br/>
+        <input type="text" name="nombre" value="<?php if($accion=="C"){echo "";}else{echo "$nombre";}?>" <?php if($accion=="D"){echo "readonly";}else{echo "required";}?>><br/>
         Apellidos: <br/>
-        <input type="text" name="apellidos" value="<?php echo "$apellidos"?>" <?php if($accion=="D"){echo "readonly";}else{echo "required";}?>/><br/>
+        <input type="text" name="apellidos" value="<?php if($accion=="C"){echo "";}else{echo "$apellidos";}?>" <?php if($accion=="D"){echo "readonly";}else{echo "required";}?>><br/>
         NIF: <br/>
-        <input type="text" name="NIFNIE" pattern="[0-9]{8}[A-Za-z]{1}" value= "<?php echo "$NIFNIE"?>" <?php if($accion=="D"){echo "readonly";}else{echo "required";}?>/><br/>
+        <input type="text" name="NIFNIE" pattern="[0-9]{8}[A-Za-z]{1}" value= "<?php if($accion=="C"){echo "";}else{echo "$NIFNIE";}?>" <?php if($accion=="D"){echo "readonly";}else{echo "required";}?>><br/>
         Usuario: <br/>
-        <input type="text" name="usuario" value="<?php echo "$user"?>" <?php if($accion=="D"){echo "readonly";}else{echo "required";}?>/><br/>
+        <input type="text" name="usuario" value="<?php if($accion=="C"){echo "";}else{echo "$user";}?>" <?php if($accion=="D"){echo "readonly";}else{echo "required";}?>><br/>
 
-        <input type="submit" name="enviar" value="<?php echo $texto; ?>" />
-        <input type="reset" name="limpiar" value="Borrar" />
+        <input type="submit" name="enviar" value="<?php echo ucfirst($texto); ?>">
+        <input type="reset" name="limpiar" value="Borrar">
 		<input type="hidden" name="IdPersona" value="<?php echo "$IdPersona"?>">
 
     </form>
@@ -169,6 +170,7 @@ $user = $fila["Usuario"];
 <?php
 }else{
 	if($_POST){
+        $accion = $_GET['accion'];
 		$IdPersona = $_GET['IdPersona'];
 		$nombre = $_POST["nombre"];
         $apellidos = $_POST["apellidos"];
@@ -179,19 +181,17 @@ $user = $fila["Usuario"];
         $usuario = 'root';
         $contraseña = '';
         $baseDatos = 'archivos';
-        if($accion="C"){$consulta = "INSERT INTO personas (Nombre, Apellidos, NIFNIE, Usuario) VALUES ('".$nombre."', '".$apellidos."', '".$NIF."', '".$user."')";}
-		if($accion="U"){$consulta = "UPDATE personas 
+        if($accion=="C"){$consulta = "INSERT INTO personas (Nombre, Apellidos, NIFNIE, Usuario) VALUES ('".$nombre."', '".$apellidos."', '".$NIF."', '".$user."')";}
+		if($accion=="U"){$consulta = "UPDATE personas 
 		SET Nombre='".$nombre."',
 		Apellidos='".$apellidos."',
 		NIFNIE='".$NIF."',
 		Usuario='".$user."'
 		WHERE IdPersona = ".$IdPersona.";";
 		}
-		if($accion="D"){$consulta = "DELETE FROM personas WHERE IdPersona = ".$IdPersona.";";}
-		echo $consulta;
+		if($accion=="D"){$consulta = "DELETE FROM personas WHERE IdPersona = ".$IdPersona.";";}
         $conexion = mysqli_connect($servidor, $usuario, $contraseña, $baseDatos) or die("No se ha podido conectar al servidor de Base de datos");
         $resultado = mysqli_query($conexion, $consulta) or die("Algo ha ido mal en la consulta a la base de datos");
-
 switch ($accion) {
     case "C":
         $texto = "agregado";
@@ -207,18 +207,18 @@ switch ($accion) {
 
 <!--Formulario de validar-------------------------------------------------------------------------------------------------------------------------->
 <div class="formulario">
-	<h3>Registro a <?php echo $texto; ?></h3>
+	<h3>Registro <?php echo $texto; ?></h3>
     <form action="index.php" method="post" enctype="multipart/form-data">
         Nombre: <br/>
-        <input type="text" name="nombre" value="<?php echo $nombre; ?>" readonly/><br/>
+        <input type="text" name="nombre" value="<?php echo $nombre; ?>" readonly><br/>
         Apellidos: <br/>
-        <input type="text" name="apellido" value="<?php echo $apellidos; ?>" readonly/><br/>
+        <input type="text" name="apellido" value="<?php echo $apellidos; ?>" readonly><br/>
         NIF: <br/>
-        <input type="text" name="nif" value="<?php echo $NIF; ?>" readonly/><br/>
+        <input type="text" name="nif" value="<?php echo $NIF; ?>" readonly><br/>
         Usuario: <br/>
-        <input type="text" name="usuario" value="<?php echo $user; ?>"  readonly/><br/>
+        <input type="text" name="usuario" value="<?php echo $user; ?>"  readonly><br/>
 
-        <input type="submit" name="enviar" value="Aceptar" />
+        <input type="submit" name="enviar" value="Aceptar">
     </form>
 </div>
 <?php
