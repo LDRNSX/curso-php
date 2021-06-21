@@ -13,7 +13,7 @@ $contraseña = '';
 $baseDatos = 'archivos';
 
 //Paginacion----------------------------------------------------------------------------------------------------------------------------------------------
-$per_page_record = 15;  // Number of entries to show in a page.   
+$per_page_record = 10;  // Number of entries to show in a page.   
 // Look for a GET variable page if not found default is 1.        
 if (isset($_GET['page_no']) && $_GET['page_no'] != "") {
   $page_no = $_GET['page_no'];
@@ -27,7 +27,7 @@ $next_page = $page_no + 1;
 $adjacents = "2";
 
 //Conexion base de datos------------------------------------------------------------------------------------------------------------------------------
-$consulta = "SELECT IdArchivo, Ruta, NombreArchivo, Tamaño, IdPersona, FechaCreado, FechaModifica, Descripción 
+$consulta = "SELECT IdArchivo, Ruta, Nombre, Tamano, IdPersona, FechaCreado, FechaModifica, Descripción 
 FROM archivos A JOIN rutas as R ON R.IdRuta= A.IdRuta 
 JOIN `Tipos de Contenidos` as T ON T.IdTIpoContenido = A.IdTIpoContenido
 LIMIT $start_from, $per_page_record";//determine the sql LIMIT starting number for the results on the displaying page  
@@ -52,8 +52,8 @@ while ($columna = mysqli_fetch_array($resultado)) {
   echo '<tr>
           <td>' . $columna['IdArchivo'] . '</td>
           <td>' . $columna['Ruta'] . '</td>
-          <td>' . $columna['NombreArchivo'] . '</td>
-          <td>' . $columna['Tamaño'] . '</td>
+          <td>' . $columna['Nombre'] . '</td>
+          <td>' . $columna['Tamano'] . '</td>
           <td>' . $columna['IdPersona'] . '</td>
           <td>' . $columna['FechaCreado'] . '</td>
           <td>' . $columna['FechaModifica'] . '</td>
