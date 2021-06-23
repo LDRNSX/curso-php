@@ -7,7 +7,7 @@ class BaseDatos extends DBConfig{
         $this->pConnection->query("SET NAMES 'utf8'");
     } // end of member function __construct
 
-    protected function setData( $query){
+    protected function getData( $query){
         $result = $this->pConnection->query($query);
         if($result== false) {
             return false;
