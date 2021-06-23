@@ -10,6 +10,10 @@ echo "		<h1>Ejercicio 8</h1>" . PHP_EOL;
 
 require_once '../Modelo/ClasesBaseDatos/BaseDatos.php';
 
+class Personas extends BaseDatos{
+
+    
+}
 
 include "../Vista/piePagina.phtml";
 ?>

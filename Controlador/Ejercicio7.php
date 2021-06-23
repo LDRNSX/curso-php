@@ -75,7 +75,7 @@ class CRUD extends BaseDatos
 		if ($query != "") {
 			$this->setSQL_R($query);
 		} // END IF
-		$retorno = $this->setData($this->pSQL_R);
+		$retorno = $this->getData($this->pSQL_R);
 		return $retorno;
 	} // end of member function buscaRegistro
 
@@ -113,7 +113,7 @@ class CRUD extends BaseDatos
 		} // END IF
 		$retorno = $this->getData($this->pSQL_R);
 		$array = array();
-		$array[] = ' <table>' . PHP_EOL;
+		$array[] = ' <table width=100%">' . PHP_EOL;
 
 		foreach ($retorno as $key => $value) {
 			// echo '<pre>';
@@ -162,22 +162,37 @@ class CRUD extends BaseDatos
 	}
 } // end of CRUD
 
+$queryc = "INSERT INTO personas ";
+$queryc .= "(NIFNIE, Nombre, Apellidos, Usuario)";
+$queryc .= " VALUES('12312312M','A BORRAR','Benitez', 'baibai');";
+$queryr = "SELECT * FROM personas";
+$objeto = new CRUD("archivos", $queryc, $queryr);
+
 if (!$_POST && !$_GET ){
 	echo '<br/><a href="ejercicio7.php?accion=C&IdPersona=0" class="agregar">Agregar nuevo<a/></br></br>' . PHP_EOL;
-	$query = "INSERT INTO personas ";
-	$query .= "(NIFNIE, Nombre, Apellidos, Usuario)";
-	$query .= " VALUES('12312312M','A BORRAR','Benitez', 'baibai');";
-	$objeto = new CRUD("archivos", $query, "SELECT * FROM personas;");
 
 	foreach ($objeto->tablaRegistro() as $key => $value) {
 		echo $value;
 	}
-
 } else {
+	$accion = $_GET['accion'];
+	$IdPersona = $_GET['IdPersona'];
+	$query = "SELECT * FROM personas WHERE IdPersona = '" . $IdPersona . "';";
+	
+	if ($accion != "C") {
+		$fila = $objeto->buscaRegistro($query);
+		$fila = $fila[0];
+		$NIFNIE = $fila["NIFNIE"];
+		$nombre = $fila["Nombre"];
+		$apellidos = $fila["Apellidos"];
+		$user = $fila["Usuario"];
+	} else {
+		$NIFNIE = "";
+		$nombre = "";
+		$apellidos = "";
+		$user = "";
+	}
 	if ($_GET && !$_POST) {
-		$accion = $_GET['accion'];
-		$IdPersona = $_GET['IdPersona'];
-
 		switch ($accion) {
 			case "C":
 				$texto = "agregar";
@@ -189,105 +204,91 @@ if (!$_POST && !$_GET ){
 				$texto = "eliminar";
 				break;
 		}
-
-		$bdcrud = new BaseDatos("archivos");
-		$query = "SELECT * FROM personas WHERE IdPersona = '".$IdPersona."';";
-		$resultado = mysqli_query($bdcrud->pConnection, $query) or die("Algo ha ido mal en la consulta a la base de datos");
-		$fila = mysqli_fetch_array($resultado);
-		if($accion!="C"){
-			$NIFNIE = $fila["NIFNIE"];
-			$nombre = $fila["Nombre"];
-			$apellidos = $fila["Apellidos"];
-			$user = $fila["Usuario"];		
-		}
-		?>
-<!--Formulario de captura-------------------------------------------------------------------------------------------------------------------------->
-
-<div class="formulario">
-	<h3>Registro a <?php echo $texto; ?></h3>
-    <form action="" method="post" enctype="multipart/form-data">
-        Nombre: <br/>
-        <input type="text" name="nombre" value="<?php if($accion=="C"){echo "";}else{echo "$nombre";}?>" <?php if($accion=="D"){echo "readonly";}else{echo "required";}?>><br/>
-        Apellidos: <br/>
-        <input type="text" name="apellidos" value="<?php if($accion=="C"){echo "";}else{echo "$apellidos";}?>" <?php if($accion=="D"){echo "readonly";}else{echo "required";}?>><br/>
-        NIF: <br/>
-        <input type="text" name="NIFNIE" pattern="[0-9]{8}[A-Za-z]{1}" value= "<?php if($accion=="C"){echo "";}else{echo "$NIFNIE";}?>" <?php if($accion=="D"){echo "readonly";}else{echo "required";}?>><br/>
-        Usuario: <br/>
-        <input type="text" name="usuario" value="<?php if($accion=="C"){echo "";}else{echo "$user";}?>" <?php if($accion=="D"){echo "readonly";}else{echo "required";}?>><br/>
-
-        <input type="submit" name="enviar" value="<?php echo ucfirst($texto); ?>">
-        <input type="reset" name="limpiar" value="Borrar">
-		<input type="hidden" name="IdPersona" value="<?php echo "$IdPersona"?>">
-
-    </form>
-</div>
-
-<?php
-}else{
-	if($_POST){
-        $accion = $_GET['accion'];
-		$IdPersona = $_GET['IdPersona'];
-		$nombre = $_POST["nombre"];
-        $apellidos = $_POST["apellidos"];
-        $NIF = $_POST["NIFNIE"];
-        $user = $_POST["usuario"];
-		$bdcrud = new BaseDatos("archivos");
-		$query = "SELECT * FROM personas WHERE IdPersona = '".$IdPersona."';";
-		$resultado = mysqli_query($bdcrud->pConnection, $query) or die("Algo ha ido mal en la consulta a la base de datos");
-        if($accion=="C"){
-			$query = "INSERT INTO personas ";
-			$query .= "(NIFNIE, Nombre, Apellidos, Usuario)";
-			$query .= " VALUES ('".$nombre."', '".$apellidos."', '".$NIF."', '".$user."');";
-			$create = new CRUD("archivos", $query, "SELECT * FROM personas;");
-			$create->agregaRegistro($query);
-		}
-		if($accion=="U"){
-			$query = "UPDATE personas ";
-			$query .= "SET Nombre='".$nombre."', Apellidos='".$apellidos."', NIFNIE='".$NIF."', Usuario='".$user."'";
-			$query .= "WHERE IdPersona = ".$IdPersona.";";
-			$update = new CRUD("archivos", $query, "SELECT * FROM personas;");
-			$update->modificaRegistro($query);
-		}
-		if($accion=="D"){
-			$query = "DELETE FROM personas ";
-			$query .= "WHERE IdPersona = ".$IdPersona.";";
-			$agregar = new CRUD("archivos", $query, "SELECT * FROM personas;");
-			$agregar->eliminaRegistro($query);}
-		
-		switch ($accion) {
-			case "C":
-				$texto = "agregado";
-				break;
-			case "U":
-				$texto = "modificado";
-				break;
-			case "D":
-				$texto = "eliminado";
-				break;
-		}
 ?>
+		<!--Formulario de captura-------------------------------------------------------------------------------------------------------------------------->
 
-<!--Formulario de validar-------------------------------------------------------------------------------------------------------------------------->
-<div class="formulario">
-	<h3>Registro <?php echo $texto; ?></h3>
-    <form action="index.php" method="post" enctype="multipart/form-data">
-        Nombre: <br/>
-        <input type="text" name="nombre" value="<?php echo $nombre; ?>" readonly><br/>
-        Apellidos: <br/>
-        <input type="text" name="apellido" value="<?php echo $apellidos; ?>" readonly><br/>
-        NIF: <br/>
-        <input type="text" name="nif" value="<?php echo $NIF; ?>" readonly><br/>
-        Usuario: <br/>
-        <input type="text" name="usuario" value="<?php echo $user; ?>"  readonly><br/>
+		<div class="formulario">
+			<h3>Registro a <?php echo $texto; ?></h3>
+			<form action="" method="post" enctype="multipart/form-data">
+				Nombre: <br />
+				<input type="text" name="nombre" value="<?php if ($accion == "C") {echo "";} else {echo "$nombre";} ?>" <?php if ($accion == "D") {echo "readonly";} else {echo "required";} ?>><br />
+				Apellidos: <br />
+				<input type="text" name="apellidos" value="<?php if ($accion == "C") {echo "";} else {echo "$apellidos";} ?>" <?php if ($accion == "D") {echo "readonly";} else {echo "required";}?>><br />
+				NIF: <br />
+				<input type="text" name="NIFNIE" pattern="[0-9]{8}[A-Za-z]{1}" value="<?php if ($accion == "C") {echo "";} else {echo "$NIFNIE";} ?>" <?php if ($accion == "D") {echo "readonly";} else {echo "required";} ?>><br />
+				Usuario: <br />
+				<input type="text" name="usuario" value="<?php if ($accion == "C") {echo "";} else {echo "$user";} ?>" <?php if ($accion == "D") {echo "readonly";} else {echo "required";} ?>><br />
 
-        <input type="submit" name="enviar" value="Aceptar">
-    </form>
-</div>
+				<input type="submit" name="enviar" value="<?php echo ucfirst($texto); ?>">
+				<input type="reset" name="limpiar" value="Borrar">
+				<input type="hidden" name="IdPersona" value="<?php echo "$IdPersona" ?>">
+
+			</form>
+		</div>
+
+		<?php
+	} else {
+
+		if ($_POST) {
+			$accion = $_GET['accion'];
+			$IdPersona = $_GET['IdPersona'];
+			$nombre = $_POST["nombre"];
+			$apellidos = $_POST["apellidos"];
+			$NIF = $_POST["NIFNIE"];
+			$user = $_POST["usuario"];
+
+			if ($accion == "C") {
+				$query = "INSERT INTO personas ";
+				$query .= "(NIFNIE, Nombre, Apellidos, Usuario)";
+				$query .= " VALUES ('" . $NIF . "', '" . $nombre . "', '" . $apellidos . "', '" . $user . "');";
+				$objeto->agregaRegistro($query);
+			}
+			if ($accion == "U") {
+				$query = "UPDATE personas ";
+				$query .= "SET Nombre='" . $nombre . "', Apellidos='" . $apellidos . "', NIFNIE='" . $NIF . "', Usuario='" . $user . "'";
+				$query .= "WHERE IdPersona = " . $IdPersona . ";";
+				$objeto->modificaRegistro($query);
+			}
+			if ($accion == "D") {
+				$query = "DELETE FROM personas ";
+				$query .= "WHERE IdPersona = " . $IdPersona . ";";
+				$objeto->eliminaRegistro($query);
+			}
+
+			switch ($accion) {
+				case "C":
+					$texto = "agregado";
+					break;
+				case "U":
+					$texto = "modificado";
+					break;
+				case "D":
+					$texto = "eliminado";
+					break;
+			}
+		?>
+
+			<!--Formulario de validar-------------------------------------------------------------------------------------------------------------------------->
+			<div class="formulario">
+				<h3>Registro <?php echo $texto; ?></h3>
+				<form action="index.php" method="post" enctype="multipart/form-data">
+					Nombre: <br />
+					<input type="text" name="nombre" value="<?php echo $nombre; ?>" readonly><br />
+					Apellidos: <br />
+					<input type="text" name="apellido" value="<?php echo $apellidos; ?>" readonly><br />
+					NIF: <br />
+					<input type="text" name="nif" value="<?php echo $NIF; ?>" readonly><br />
+					Usuario: <br />
+					<input type="text" name="usuario" value="<?php echo $user; ?>" readonly><br />
+
+					<input type="submit" name="enviar" value="Aceptar">
+				</form>
+			</div>
 
 
 <?php
+		}
 	}
-}
 }
 
 include "../Vista/piePagina.phtml";
