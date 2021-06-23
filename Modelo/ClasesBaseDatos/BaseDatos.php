@@ -7,7 +7,7 @@ class BaseDatos extends DBConfig{
         $this->pConnection->query("SET NAMES 'utf8'");
     } // end of member function __construct
 
-    protected function getData( $query){
+    /*protected*/ function getData( $query){
         $result = $this->pConnection->query($query);
         if($result== false) {
             return false;
@@ -19,7 +19,7 @@ class BaseDatos extends DBConfig{
         return $rows;
     } // end of member function getData
 
-    protected function execute( $query){
+    /*protected*/ function execute( $query){
         $result = $this->pConnection->query($query);
         if($result == false) {
             echo "<h1>Error: no se ha podido ejecutar $query </h1>" . PHP_EOL;

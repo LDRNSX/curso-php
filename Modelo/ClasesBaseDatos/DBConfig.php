@@ -3,10 +3,10 @@ class DBConfig{
     const SERVER = "localhost";
     const DBUSER = "root";
     const PSSWRD = "";
-    protected $pDBName;
-    protected $pConnection;
+    public $pDBName;
+    public $pConnection;
     
-    protected function __construct($DBName){
+    /*protected*/ function __construct($DBName){
         $this->pDBName=$DBName;
         if(!isset($this->pConnection)) {
             $this->pConnection = new mysqli(self::SERVER, self::DBUSER, self::PSSWRD, $this->pDBName);
