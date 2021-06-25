@@ -85,22 +85,21 @@ if ($page_no > 1) {
     $pagLink = "";
 
     if ($page_no >= 2) {
-        echo "<a href='ejercicio3.php?page=" . ($page_no - 1) . "'>  Prev </a>";
+        echo "<a href='Ejercicio3.php?page_no=" . ($page_no - 1) . "'>  Prev </a>";
     }
 
     for ($i = 1; $i <= $total_pages; $i++) {
         if ($i == $page_no) {
-            $pagLink .= "<a class = 'active' href='ejercicio3.php?page="
-                . $i . "'>" . $i . " </a>";
+            $pagLink .= "<a class = 'active'  disabled>" . $i . " </a>";
         } else {
-            $pagLink .= "<a href='ejercicio3.php?page_no=" . $i . "'>   
+            $pagLink .= "<a href='Ejercicio3.php?page_no=" . $i . "'>   
                                           " . $i . " </a>";
         }
     };
     echo $pagLink;
 
     if ($page_no < $total_pages) {
-        echo "<a href='ejercicio3.php?page=" . ($page_no + 1) . "'>  Next </a>";
+        echo "<a href='Ejercicio3.php?page_no=" . ($page_no + 1) . "'>  Next </a>";
     }
 
     ?>

@@ -57,7 +57,7 @@ class CRUD extends BaseDatos{
 		if ($query != "") {
 			$this->setSQL_R($query);
 		} // END IF
-		$retorno = $this->setData($this->pSQL_R);
+		$retorno = $this->getData($this->pSQL_R);
 		return $retorno;
 	} // end of member function buscaRegistro
 
@@ -88,14 +88,14 @@ class CRUD extends BaseDatos{
 		return $retorno;
 	} // end of member function listaRegistros
 
-	function tablaRegistro($query = "")
+	function tablaRegistro($Nombre, $query = "")
 	{
 		if ($query != "") {
 			$this->setSQL_R($query);
 		} // END IF
 		$retorno = $this->getData($this->pSQL_R);
 		$array = array();
-		$array[] = ' <table border="1">' . PHP_EOL;
+		$array[] = ' <table>' . PHP_EOL;
 
 		foreach ($retorno as $key => $value) {
 			// echo '<pre>';
@@ -135,8 +135,8 @@ class CRUD extends BaseDatos{
 					$identificador = $columna;
 				}
 			}
-			$array[] = '<td><a href="ejercicio7.php?accion=U&IdPersona=' . $identificador . '" class="active">Modificar</a></td>' . PHP_EOL;
-			$array[] = '<td><a href="ejercicio7.php?accion=D&IdPersona=' . $identificador . '" class="active">Eliminar</a></td>' . PHP_EOL;
+			$array[]= '<td><a href="'.$Nombre.'?accion=U&IdPersona='.$identificador.'" class="active">Modificar</a></td>' . PHP_EOL;
+			$array[]= '<td><a href="'.$Nombre.'?accion=D&IdPersona='.$identificador.'" class="active">Eliminar</a></td>' . PHP_EOL;
 			$array[] = ' </tr>' . PHP_EOL;
 		} // END FOREACH
 		$array[] = '</table>' . PHP_EOL;

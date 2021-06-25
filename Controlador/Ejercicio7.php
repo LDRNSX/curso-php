@@ -102,7 +102,7 @@ class CRUD extends BaseDatos
 		if ($query != "") {
 			$this->setSQL_R($query);
 		} // END IF
-		$retorno = $this->setData($this->pSQL_R);
+		$retorno = $this->getData($this->pSQL_R);
 		return $retorno;
 	} // end of member function listaRegistros
 

@@ -1,14 +1,4 @@
 <?php
-$titulo = "Ejercicio 8";
-$filecss = "../CSS/ejemplos.css";
-$body = "";
-include '../Vista/encabezado.phtml';
-include '../Vista/nav-menu.php';
-
-echo '<div class="col-sm-10">' . PHP_EOL;
-echo "		<h1>Ejercicio 8</h1>" . PHP_EOL;
-echo '<br/><a href="ejercicio8.php?accion=C&IdPersona=0" class="agregar">Agregar nuevo<a/></br></br>' . PHP_EOL;
-
 require_once '../Modelo/CRUD.php';
 
 class personas extends CRUD{
@@ -18,6 +8,7 @@ class personas extends CRUD{
 	public $Apellidos;
 	public $Usuario;
 	const BASEDATOS = "archivos";
+	const TABLA = "personas";
 	
 	function getIdPersona(){
 		return $this->IdPersona;
@@ -81,66 +72,52 @@ class personas extends CRUD{
 	
 	function agregaDatos()
 	{
-		$query = "INSERT INTO " . $this->BASEDATOS . "(NIFNIE, Nombre, Apellidos, Usuario) VALUES ('". $this->NIFNIE ."', '". $this->Nombre ."', '". $this->Apellidos ."', '". $this->Usuario ."')";
-		parent::agregaRegistro( $query);
-		if($query != ""){
-			$this->setSQL_C($query);
-		} // END IF
-		$retorno=$this->execute($this->pSQL_C);
-	return $retorno;
+		$query = "INSERT INTO " . self::TABLA . " (NIFNIE, Nombre, Apellidos, Usuario) VALUES ('".$this->NIFNIE."', '".$this->Nombre."', '".$this->Apellidos."', '".$this->Usuario."')";
+		return parent::agregaRegistro( $query);
 	} // end of member function agregaRegistro
 
-	/* function buscaDatos()
+	function buscaDatos($codigo = "", $NIF = "")
 	{
-		parent::buscaRegistro();
-		if($query != ""){
-			$this->setSQL_R($query);
-		} // END IF
-		$retorno=$this->setData($this->pSQL_R);
-		return $retorno;		
+		$query = "SELECT * FROM personas ";
+		if ($codigo =="" && $NIF == ""){
+			$query .= "WHERE IdPersona =" . $this->IdPersona . ";";
+		}else{
+			if ( $codigo != ""){
+				$query .= "WHERE IdPersona =" . $codigo . ";";
+			}else{
+				if ($NIF != ""){
+				$query .= "WHERE NIFNIE ='".$NIF."';";
+				}else{
+					$query .= "WHERE NIFNIE ='".$this->NIFNIE."';";
+				}
+			}
+		}
+		return parent::buscaRegistro($query);
 	} // end of member function buscaRegistro
-*/
+
 	 function modificaDatos()
 	{
-		$query = "UPDATE personas SET Nombre='". $this->Nombre ."', Apellidos='". $this->Apellidos ."',	NIFNIE='". $this->NIFNIE ."',	Usuario='". $this->Usuario ."'	WHERE IdPersona = ". $this->IdPersona .";";
-		parent::modificaRegistro( $query);
-		if($query != ""){
-			$this->setSQL_U($query);
-		} // END IF
-		$retorno=$this->execute($this->pSQL_U);
-		return $retorno;			
+		$query = "UPDATE " . self::TABLA . " SET Nombre='".$this->Nombre."', Apellidos='".$this->Apellidos."',	NIFNIE='".$this->NIFNIE."',	Usuario='".$this->Usuario."'	WHERE IdPersona = ".$this->IdPersona.";";
+		return parent::modificaRegistro( $query);
 	} // end of member function modificaRegistro
 
 	 function eliminaDatos()
 	{
-		$query = "DELETE FROM personas WHERE IdPersona = ".$this->IdPersona.";";
-		parent::eliminaRegistro( $query);
-		if($query != ""){
-			$this->setSQL_D($query);
-		} // END IF
-		$retorno=$this->execute($this->pSQL_D);
-		return $retorno;			
+		$query = "DELETE FROM " . self::TABLA . " WHERE IdPersona = ".$this->IdPersona.";";
+		return parent::eliminaRegistro( $query);
 	} // end of member function eliminaRegistro
 
 	 function listaDatos()
 	{
-		$query = "SELECT * FROM personas";
-		parent::listaRegistros( $query );
-		$retorno=$this->getData($query);
-		return $retorno;		
+		$query = "SELECT * FROM " . self::TABLA . ";";
+		return parent::listaRegistros( $query );
 	} // end of member function listaRegistros
 	
 	 function tablaDatos($Nombre){
-		$query = "SELECT * FROM personas";
+		$query = "SELECT * FROM " . self::TABLA . ";";
 		return parent::tablaRegistro($Nombre, $query);
 	
     }
 }
 
-$persona = new personas();
-foreach($persona->tablaDatos("Ejercicio8.php") as $key=>$value){
-	echo $value;
-}
-
-include "../Vista/piePagina.phtml";
 ?>
